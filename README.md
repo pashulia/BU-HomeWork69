@@ -24,6 +24,8 @@ https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan#hardhat-e
 	•	От имени acc_2 вызывает AddPayament, передавая как аргументы адрес acc_1 и некоторое value
 	•	Вызывает задачу GetPayament, передавая в качестве аргумента адресс acc_2
 	•	От имени acc_1 вызывает SendPayament, передавая как аргумент адрес acc_2
+	•	Вызывает задачу GetPayament, передавая в качестве аргумента адресс acc_2
+	•	Вызывает задачу GetPayament, передавая в качестве аргумента адресс acc_1
 
 Для проверки пришлите:
 	•	скрипт
