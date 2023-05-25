@@ -9,7 +9,7 @@ contract HomeWork4 {
         address target;
     }
 
-    uint256 public persent;
+    uint256 public percent;
     address public owner;
 
     mapping(address => Payment) payments;
@@ -17,16 +17,16 @@ contract HomeWork4 {
     event AddPayment(uint256 value, address sender, address target);
     event GetPayment(uint256 value, address sender, address target);
 
-    constructor(Payment memory payment, uint256 _persent){
+    constructor(address _target, uint256 _percent) payable {
         owner = msg.sender;
-        payments[msg.sender] = payment;
-        persent = _persent;
+        payments[msg.sender] = Payment(msg.value, _target);
+        percent = _percent;
     }
 
     function addPayment(address target) public payable {
         // console.log("Contract: addPayment, msg.sender: ", msg.sender);
         require(payments[msg.sender].value == 0, "You've already made a payment");
-        uint256 commission = msg.value * persent / 100;
+        uint256 commission = msg.value * percent / 100;
         payments[msg.sender] = Payment(msg.value - commission, target);
         payments[owner].value += commission;
         emit AddPayment(msg.value - commission, msg.sender, target);

@@ -1,32 +1,66 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
+const { ethers } = require("hardhat");
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+    const [acc_1, acc_2] = await ethers.getSigners();
+    const targetAddress = acc_2.address;
+    const value = 1000;
+    const percent = 5; 
+    
+    const contractAddress = await hre.run("deploy", {
+        target: targetAddress,
+        percent: percent,
+        value: value,
+        account: acc_1
+    })
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.001");
+    console.log("getPayment in script: ", await hre.run("getPayment", {
+        contractAddress: contractAddress,
+        sender: acc_1.address,
+        account: acc_1
+    })); 
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+    console.log("sendPayment in script: ", await hre.run("sendPayment", {
+        contractAddress: contractAddress,
+        sender: acc_1.address,
+        account: acc_2
+    }));
 
-  await lock.deployed();
+    console.log("addPayment in script: ", await hre.run("addPayment", {
+        contractAddress: contractAddress,
+        target: acc_1.address,
+        value: 2000,
+        account: acc_2
+    }));
 
-  console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+    console.log("getPayment in script: ", await hre.run("getPayment", {
+        contractAddress: contractAddress,
+        sender: acc_2.address,
+        account: acc_1
+    }));
+
+    console.log("sendPayment in script: ", await hre.run("sendPayment", {
+        contractAddress: contractAddress,
+        sender: acc_2.address,
+        account: acc_1
+    }));
+
+    console.log("getPayment in script: ", await hre.run("getPayment", {
+        contractAddress: contractAddress,
+        sender: acc_2.address,
+        account: acc_1
+    }));
+
+    console.log("getPayment in script: ", await hre.run("getPayment", {
+        contractAddress: contractAddress,
+        sender: acc_1.address,
+        account: acc_1
+    }));
+
+    console.log("Contract balance: ", await ethers.provider.getBalance(contractAddress));
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+    console.error(error);
+    process.exitCode = 1;
 });
